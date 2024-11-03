@@ -1,4 +1,4 @@
-import { Dispatch, FormEvent, FormEventHandler, SetStateAction } from "react";
+import { Dispatch, FormEvent, SetStateAction } from "react";
 
 type Props = {
   countries: any[] | undefined;
