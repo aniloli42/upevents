@@ -8,10 +8,13 @@ export default function Home() {
   const [holidays, setHolidays] = useState<THoliday[]>();
   const [countries, setCountries] = useState<any[]>();
   const [currentCountry, setCurrentCountry] = useState("Nepal");
+  const [messageText, setMessageText] = useState<string>();
 
   useEffect(() => {
     getCountries().then((r) => setCountries(r));
   }, []);
+
+  const error = messageText == "" ? false : true;
 
   useEffect(() => {
     if (countries == undefined) return;
@@ -20,7 +23,14 @@ export default function Home() {
       (country) => country["country_name"] === currentCountry
     );
 
+    if (symbol === undefined) {
+      setMessageText("Invalid Country");
+      return;
+    }
+    setMessageText("");
+
     getCountryHolidays(symbol["iso-3166"]).then((r) => {
+      if (r.length == 0) setMessageText("No holidays in upcoming 7 days");
       setHolidays(r);
     });
   }, [countries, currentCountry]);
@@ -35,9 +45,16 @@ export default function Home() {
           Upcoming Holidays in 7 Days in {currentCountry}
         </h2>
 
-        {holidays?.map((holiday) => (
-          <Card key={holiday.name} holiday={holiday} />
-        ))}
+        {!error &&
+          holidays?.map((holiday) => (
+            <Card key={holiday.name} holiday={holiday} />
+          ))}
+
+        {error && (
+          <p className="text-white bg-red-400/20 backdrop-blur-lg px-6 py-4 rounded text-xl">
+            {messageText}
+          </p>
+        )}
       </div>
     </>
   );
